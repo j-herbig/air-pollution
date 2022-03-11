@@ -65,6 +65,7 @@ We had long discussions about how to handle presumable sensor failures. For exam
     * to a left join with the preprocessed DataFrame
     * impute the missing values
 * [juanitorduz/btsa](https://github.com/juanitorduz/btsa/tree/master/python/fundamentals/notebooks): example how to handle missing values
+    * generally it's recommended to add a "missing value indicator" before filling the missing values
 
 ---
 ## <span style="color:black"> __Modeling__ </span>
@@ -73,6 +74,10 @@ We had long discussions about how to handle presumable sensor failures. For exam
 ### __Open questions__
 
 * Do we wanna predict PM per city or per location? If we predict per location and keep the high temperatures (up to 60°C) the consideration of sun shine hours (Deutscher Wetterdienst) could be interesting
+* maybe by using lon and lat as features, it's enough to train one model for all locations
+* there are two ways to handle pollen:
+    * clean the PM10 data (maybe by looking at the correlation of PM2.5 and PM10) for both training and testing
+    * leave the data as it is and predict pollen as a seasonal part of PM10. Maybe give advice to the stakeholder when PM10 is infected by pollen.
 
 ### __Literature / Links__
 
