@@ -24,6 +24,7 @@
 
 * [Exploring the relationship between air pollution and meteorological conditions in China under environmental governance](https://www.nature.com/articles/s41598-020-71338-7): "The concentration of air pollutants at most stations was significantly negatively correlated with wind speed, precipitation and relative humidity, but positively correlated with atmospheric pressure. As the latitude increases, the impact of temperature on the concentration of air pollutants becomes more obvious."
 * [Download of air quality data](https://discomap.eea.europa.eu/map/fme/AirQualityExport.htm): more data for Europe
+* [Assessment of Measurement Uncertainties for a SDS011 low-cost PM sensor](http://www.opengeiger.de/Feinstaub/SDSFunct.pdf)
 
 
 
@@ -63,6 +64,7 @@ We had long discussions about how to handle presumable sensor failures. For exam
     * create a DataFrame with rows for every hour and location
     * to a left join with the preprocessed DataFrame
     * impute the missing values
+* [juanitorduz/btsa](https://github.com/juanitorduz/btsa/tree/master/python/fundamentals/notebooks): example how to handle missing values
 
 ---
 ## <span style="color:black"> __Modeling__ </span>
