@@ -4,7 +4,7 @@ import datetime as dt
 
 parameters_ts = ['t_2m:C', 'msl_pressure:hPa', 'precip_1h:mm', 'wind_speed_10m:ms', 'wind_dir_10m:d']
 
-now = dt.datetime.utcnow().replace(minute=0, second=0, microsecond=0)
+now = dt.datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
 startdate_ts = now
 enddate_ts = startdate_ts + dt.timedelta(days=9)
 interval_ts = dt.timedelta(hours=1)
