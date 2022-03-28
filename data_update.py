@@ -5,7 +5,7 @@ import glob
 
 # 1. make sure to run "download_Deutscher_Wetterdienst.ipynb" and "download_sensor_community_update_data.ipynb" before this. 
 # 2. do not forget to delete "data/DeutscherWetterdienst" before running "download_Deutscher_Wetterdienst.ipynb"
-# 3. lastly, 
+# 3. lastly, set the day variable of download
 
 # define needed functions 
 
@@ -197,24 +197,33 @@ if __name__ == "__main__":
     # reorganize columns: first non-data columns, then sorted data columns
     sensor_dwd_df = sensor_dwd_df.reindex(columns=no_data_cols + sc_cols + dwd_cols)
 
-    # apply cleaning function
-    sensor_dwd_df = clean_pm(sensor_dwd_df)
-    
-    missing_values = get_share_of_missing_values(sensor_dwd_df, '2021-01-01')
-
-    # get the IDs of good sensors having less than 25 % missing values in PM2.5
-    good_sensors = missing_values.query("PM2p5_missing < 0.25")['location_id']
-
-    df_good_sensors = use_good_sensors_only(sensor_dwd_df, good_sensors=good_sensors)
-
-    # export data 
-    # all data for final prediction
-    df_good_sensors.to_csv(f"data/cleaned_sensors_dwd_{day}.csv")
-
     # Train test split for model evaluation
     split_time = '2022-01-31 23:00'
-    df_train = df_good_sensors[df_good_sensors.timestamp <= split_time]
-    df_train.to_csv(f"data/cleaned_sensors_dwd_train_{day}.csv")
+    sensor_df_train = sensor_dwd_df[sensor_dwd_df.timestamp <= split_time]
+    sensor_df_test = sensor_dwd_df[sensor_dwd_df.timestamp > split_time]
 
-    df_test = df_good_sensors[df_good_sensors.timestamp > split_time]
-    df_test.to_csv(f"data/cleaned_sensors_dwd_test_{day}.csv")
+    # apply cleaning function
+    sensor_df_train = clean_pm(sensor_df_train)
+    sensor_df_test = clean_pm(sensor_df_test)
+
+    # get missing values
+    missing_values_train = get_share_of_missing_values(sensor_df_train, '2021-01-01')
+    missing_values_test = get_share_of_missing_values(sensor_df_test, '2021-01-01')
+
+    # get the IDs of good sensors having less than 25 % missing values in PM2.5
+    good_sensors_train = missing_values_train.query("PM2p5_missing < 0.25")['location_id']
+    good_sensors_test = missing_values_test.query("PM2p5_missing < 0.25")['location_id']
+
+    # adjust good sensors according to good test locations
+    df_good_sensors_train = use_good_sensors_only(sensor_df_train, good_sensors=good_sensors_train)
+    df_good_sensors_train = use_good_sensors_only(df_good_sensors_train, good_sensors=good_sensors_test)
+    df_good_sensors_test = use_good_sensors_only(sensor_df_test, good_sensors=good_sensors_train)
+    df_good_sensors_test = use_good_sensors_only(df_good_sensors_test, good_sensors=good_sensors_test)
+
+    # export data 
+    df_good_sensors_train.to_csv(f"data/cleaned_sensors_dwd_train_{day}.csv")
+    df_good_sensors_test.to_csv(f"data/cleaned_sensors_dwd_test_{day}.csv")
+
+    # all data for final prediction
+    df_good_sensors = pd.concat([df_good_sensors_train, df_good_sensors_test], axis=0)
+    df_good_sensors.to_csv(f"data/cleaned_sensors_dwd_{day}.csv")
