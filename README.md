@@ -1,17 +1,49 @@
-# ds-modeling-pipeline
+# TAKE A DEEP BREATH?
+Particulate matter prediction based on meteorological open source sensor data using time series analysis.
 
-Here you find a Skeleton project for building a simple model in a python script or notebook and log the results on MLFlow.
+At the end of our 12-week-data-science-bootcamp stood the capstone project. A time of practice and continued learning. We four found together due to our concern for ecological topics and our interest in time series analyses. This repo holds our joint work of round about three weeks.
 
-There are two ways to do it: 
-* In Jupyter Notebooks:
-    We train a simple model in the [jupyter notebook](notebooks/EDA-and-modeling.ipynb), where we select only some features and do minimal cleaning. The hyperparameters of feature engineering and modeling will be logged with MLflow
+## Topic
+Air pollution is causing millions of premature deaths worldwide. Even in Germany the particulate matter (PM) concentrations are repeatedly classified as unhealthy by the EU. In this project we evaluate geographical and seasonal impacts on PM concentrations for two German cities. Furthermore, we implement a 7-day PM forecast for 64 different locations within these cities. This forecast is based on current open source PM sensor data, weather data and forecasted weather data and can be extended across Germany.
+## Data
+We took into account three data sources:
+* Historic to up-to-date  particulate matter (PM) values for various locations all over the world are provided together with several weather data by the [Sensor Community](https://sensor.community/en/).
+* Historic to up-to-date weather data for around 500 cities in Germany are provided by [Deutscher Wetterdienst](https://opendata.dwd.de/climate_environment/CDC/observations_germany/).
+* Weather forecast based on Deutscher Wetterdienst data is provided by [meteomatix](https://www.meteomatics.com/de/).
 
-* With Python scripts:
-    The [main script](modeling/train.py) will go through exactly the same process as the jupyter notebook and also log the hyperparameters with MLflow
+For sure we couldn't use the whole enormous amount of data. Actually we spend quit a lot of time to figure out how to clean the sensor community data properly and to accept that only PM measurement are usable for us. Because of the shortness of time, we limited our analysis to two areas in Germany: Frankfurt(Main) and Bremen. Still we made sure, that the data processing steps can easily be adapted to other areas in Germany.
+## Structure
+This repo holds the following folders and information/results:
+* [data](https://github.com/j-herbig/air-pollution/tree/main/data): Download folder for the data.
+* [models](https://github.com/j-herbig/air-pollution/tree/main/modeling): Holds the config file for model tracking by means of MLflow.
+* [notebooks](https://github.com/j-herbig/air-pollution/tree/main/notebooks): Jupyter Notebooks and python files to download, clean, merge, analyze and visualize the data as follows:
 
-Data used is the [coffee quality dataset](https://github.com/jldbc/coffee-quality-database).
+| Notebook / Python File | Purpose|
+|---|---|
+| download_Deutscher_Wetterdinest.ipynb | download training weather data until now |
+| download_sensor_community.ipynb | download PM training data |
+| download_sensor_community_update_data.ipynb | update training PM data until now |
+| download_weather_forecast.ipynb | download future weather data |
+| meteomatics_download.py |  |
+| data_merging.ipynb | merge and preprocess weather and PM data |
+| EDA.ipynb | exploratory data analysis and data cleaning |
+| location_plot.ipynb | overview of investigated 64 locations |
+| baseline.ipynb | baseline model for PM forecast |
+| prophet_single_location.ipynb | (fast) PM forecast for only one location |
+| config.py | configuration file for MLflow usage |
+| prophet_all_locations_mlflow_images.ipynb | PM forecast for all 64 locations tracked with MLflow for model tuning and images saved |
+| rmse_analysis.ipynb | error analysis with data downloaded from MLflow|
+| future_predictions.ipynb | PM forecast for all 64 locations and visualization of results with keppler.gl |
+| future_predictions_cv.ipynb |  |
+| future_predictions_presentation.ipynb | PM forecast for all 64 locations and generation of graphs for presentation |
 
-## Requirements:
+* [presentations](https://github.com/j-herbig/air-pollution/tree/main/presentations): Brief overview of our results given as a midterm and a final presentation for our pretended stakeholder Deutscher-Städte-und-Gemeindebund.
+* [protocols](https://github.com/j-herbig/air-pollution/tree/main/protocols): We did a proper project management and recorded the discussions that where necessary at the beginning.  
+* [statistics](https://github.com/j-herbig/air-pollution/tree/main/statistics): Download folder for statistics (RMSE) from MLflow.
+* data_update.py: Executable file to bring the data up to date.
+
+
+## Requirements
 
 - pyenv with Python: 3.9.4
 
@@ -31,82 +63,3 @@ pip install --upgrade pip
 pip install -r requirements_dev.txt
 ```
 
-The `requirements.txt` file contains the libraries needed for deployment.. of model or dashboard .. thus no jupyter or other libs used during development.
-
-The MLFLOW URI should **not be stored on git**, you have two options, to save it locally in the `.mlflow_uri` file:
-
-```BASH
-echo http://127.0.0.1:5000/ > .mlflow_uri
-```
-
-This will create a local file where the uri is stored which will not be added on github (`.mlflow_uri` is in the `.gitignore` file). Alternatively you can export it as an environment variable with
-
-```bash
-export MLFLOW_URI=http://127.0.0.1:5000/
-```
-
-This links to your local mlflow, if you want to use a different one, then change the set uri.
-
-The code in the [config.py](modeling/config.py) will try to read it locally and if the file doesn't exist will look in the env var.. IF that is not set the URI will be empty in your code.
-
-## Usage
-
-### Creating an MLFlow experiment
-
-You can do it via the GUI or via [command line](https://www.mlflow.org/docs/latest/tracking.html#managing-experiments-and-runs-with-the-tracking-service-api) if you use the local mlflow:
-
-```bash
-mlflow experiments create --experiment-name 0-template-ds-modeling
-```
-
-Check your local mlflow
-
-```bash
-mlflow ui
-```
-
-and open the link [http://127.0.0.1:5000](http://127.0.0.1:5000)
-
-This will throw an error if the experiment already exists. **Save the experiment name in the [config file](modeling/config.py).**
-
-In order to train the model and store test data in the data folder and the model in models run:
-
-```bash
-#activate env
-source .venv/bin/activate
-
-python -m modeling.train
-```
-
-In order to test that predict works on a test set you created run:
-
-```bash
-python modeling/predict.py models/linear data/X_test.csv data/y_test.csv
-```
-
-## About MLFLOW -- delete this when using the template
-
-MLFlow is a tool for tracking ML experiments. You can run it locally or remotely. It stores all the information about experiments in a database.
-And you can see the overview via the GUI or access it via APIs. Sending data to mlflow is done via APIs. And with mlflow you can also store models on S3 where you version them and tag them as production for serving them in production.
-![mlflow workflow](images/0_general_tracking_mlflow.png)
-
-### MLFlow GUI
-
-You can group model trainings in experiments. The granularity of what an experiment is up to your usecase. Recommended is to have an experiment per data product, as for all the runs in an experiment you can compare the results.
-![gui](images/1_gui.png)
-
-### Code to send data to MLFlow
-
-In order to send data about your model you need to set the connection information, via the tracking uri and also the experiment name (otherwise the default one is used). One run represents a model, and all the rest is metadata. For example if you want to save train MSE, test MSE and validation MSE you need to name them as 3 different metrics.
-If you are doing CV you can set the tracking as nested.
-![mlflow code](images/2_code.png)
-
-### MLFlow metadata
-
-There is no constraint between runs to have the same metadata tracked. I.e. for one run you can track different tags, different metrics, and different parameters (in cv some parameters might not exist for some runs so this .. makes sense to be flexible).
-
-- tags can be anything you want.. like if you do CV you might want to tag the best model as "best"
-- params are perfect for hypermeters and also for information about the data pipeline you use, if you scaling vs normalization and so on
-- metrics.. should be numeric values as these can get plotted
-
-![mlflow metadata](images/3_metadata.png)
