@@ -30,7 +30,7 @@ This repo holds the following folders and information/results:
 | location_plot.ipynb | overview of investigated 64 locations |
 | baseline.ipynb | baseline model for PM forecast |
 | prophet_single_location.ipynb | (fast) PM forecast for only one location |
-| config.py | configuration file for MLflow usage |
+| config.py | configuration file for an interactive keplergl map |
 | prophet_all_locations_mlflow_images.ipynb | PM forecast for all 64 locations tracked with MLflow for model tuning and images saved |
 | rmse_analysis.ipynb | error analysis with data downloaded from MLflow|
 | future_predictions.ipynb | PM forecast for all 64 locations and visualization of results with keppler.gl |
@@ -60,6 +60,6 @@ pyenv local 3.9.4
 python -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
-pip install -r requirements_dev.txt
+pip install -r requirements.txt
 ```
 
